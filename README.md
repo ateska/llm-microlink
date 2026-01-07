@@ -8,3 +8,9 @@ It discovers tools advertised by your services, passes them to the LLM, executes
 * **Universal LLM Support** — Connect to local models (vLLM, TensorRT-LLM) or frontier APIs (OpenAI, Anthropic Claude) through a unified interface
 * **Dynamic Tool Discovery** — Microservices register their capabilities via [Apache Zookeeper](https://en.wikipedia.org/wiki/Apache_ZooKeeper); `llm-micro-wire` picks them up automatically
 * **Native Tool Calling** — Leverages built-in function calling capabilities of modern LLMs for reliable, structured interactions
+
+## Built With
+
+* [Python](https://www.python.org) & [ASAB](https://github.com/TeskaLabs/asab) microservice framework
+* [Apache Zookeeper](https://en.wikipedia.org/wiki/Apache_ZooKeeper) for tools & service discovery
+
