@@ -24,6 +24,10 @@ class ZookeeperToolProvider(ToolProviderABC):
 	async def initialize(self):
 		await self.discover("initialize")
 
+
+	async def execute(self, function_call) -> typing.AsyncGenerator[typing.Any, None]:
+		pass
+
 	
 	async def discover(self, event_name, zkcontainer = None):
 		if zkcontainer is not None and zkcontainer != self.ToolService.App.ZkContainer:

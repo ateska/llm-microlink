@@ -6,6 +6,7 @@ import asab
 
 from .tool import FunctionCallTool
 from .provider.provider_abc import ToolProviderABC
+from .provider.local import LocalToolProvider
 
 #
 
@@ -20,8 +21,8 @@ class ToolService(asab.Service):
 		super().__init__(app, service_name)
 
 		self.Tools = {}
-		self.Providers = []
-		self.DiscoverLock = asyncio.Lock()
+
+		self.Providers = [LocalToolProvider(self)]
 
 		if 'zookeeper' in asab.Config.sections():
 			from .provider.zookeeper import ZookeeperToolProvider
@@ -32,9 +33,25 @@ class ToolService(asab.Service):
 		return list(self.Tools.values())
 
 
-	async def execute_tool(self, function_call) -> typing.AsyncGenerator[typing.Any, None]:
-		print(">>>", function_call)
-		yield "... executing tool ..."
+	async def execute(self, function_call) -> typing.AsyncGenerator[typing.Any, None]:
+		provider = None
+		for provider_id, tool_name in self.Tools.keys():
+			if tool_name == function_call.name:
+				for p in self.Providers:
+					if p.Id == provider_id:
+						provider = p
+						break
+				break
+		
+		if provider is None:
+			L.warning("Tool not found", struct_data={"name": function_call.name})
+			function_call.error = "Tool not found"
+			function_call.error = True
+			yield
+			return
+
+		async for result in provider.execute(function_call):
+			yield result
 
 
 	async def initialize(self, app):

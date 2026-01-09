@@ -2,11 +2,10 @@ import json
 import logging
 import asyncio
 
-from .datamodel import FunctionCall
 
 L = logging.getLogger(__name__)
 
-async def tool_ping(function_call: FunctionCall) -> None:
+async def tool_ping(function_call) -> None:
 	"""
 	Ping a target host or service to check if it's reachable.
 	

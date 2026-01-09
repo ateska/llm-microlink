@@ -242,7 +242,7 @@ class LLMRouterService(asab.Service):
 		})
 
 		try:
-			async for _ in self.App.ToolService.execute_tool(function_call):
+			async for _ in self.App.ToolService.execute(function_call):
 				await self.send_update(conversation, {
 					"type": "item.updated",
 					"item": function_call.to_dict(),
