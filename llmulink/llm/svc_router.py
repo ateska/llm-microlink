@@ -1,5 +1,4 @@
 import re
-import json
 import uuid
 import random
 import asyncio
@@ -65,37 +64,11 @@ class LLMRouterService(asab.Service):
 		async with self.LibraryService.open("/AI/Prompts/default.yaml") as item_io:
 			promt_decl = yaml.safe_load(item_io.read().decode("utf-8"))
 
-		instructions = promt_decl["instructions"]
-
-		tools = [
-			FunctionCallTool(
-				name = "read_note",
-				title = "Reading a markdown note",
-				description = normalize_text("""
-					Read and return the full content of a Markdown note.
-					Returns the raw Markdown content of the note as a string.
-					If the note does not exist, an error will be returned with a suggestion to use 'list_notes' to find available notes.
-				"""),
-				parameters = {
-					"type": "object",
-					"properties": {
-						"path": {
-							"type": "string",
-							"description": normalize_text("""
-								The path to the markdown note to read, e.g. "projects/meeting-notes"
-								- Can include subdirectories separated by '/' (e.g., "projects/meeting-notes")
-								- The '.md' extension is automatically appended if not provided
-								- Leading slashes are normalized
-								- Paths containing '..' are not allowed for security reasons
-							"""),
-						},
-					},
-					"required": ["path"],
-				},
-			)
-		]
-
-		conversation = Conversation(conversation_id=conversation_id, instructions=instructions, tools=tools)
+		conversation = Conversation(
+			conversation_id=conversation_id,
+			instructions=promt_decl["instructions"],
+			tools=self.App.ToolService.get_tools()
+		)
 		self.Conversations[conversation.conversation_id] = conversation
 		return conversation
 

@@ -5,6 +5,8 @@ import datetime
 
 import pydantic
 
+from ..tool import FunctionCallTool
+
 
 def _utc_now() -> datetime.datetime:
 	"""Factory function for current UTC time."""
@@ -111,13 +113,6 @@ class Exchange(pydantic.BaseModel):
 			if item.type == item_type:
 				return item
 		return None
-
-class FunctionCallTool(pydantic.BaseModel):
-	"""A tool for the conversation."""
-	name: str
-	description: str
-	parameters: dict
-	title: str = None
 
 
 class Conversation(pydantic.BaseModel):

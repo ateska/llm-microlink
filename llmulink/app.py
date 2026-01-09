@@ -1,4 +1,3 @@
-import os
 import logging
 
 import asab.api
@@ -6,6 +5,7 @@ import asab.library
 import asab.web.rest
 
 from .llm import LLMRouterService, LLMWebHandler
+from .tool import ToolService
 
 #
 
@@ -38,10 +38,14 @@ class LLMMicrolinkApplication(asab.Application):
 		self.ASABApiService.initialize_web(self.WebContainer)
 
 		# Initialize ZooKeeper
-		self.add_module(asab.zookeeper.Module)
-		self.ZooKeeperService = self.get_service("asab.ZooKeeperService")
-		self.ZkContainer = asab.zookeeper.ZooKeeperContainer(self.ZooKeeperService, 'zookeeper')
-		self.ASABApiService.initialize_zookeeper(self.ZkContainer)
+		self.ZooKeeperService = None
+		self.ZkContainer = None
+		if 'zookeeper' in asab.Config.sections():
+			# Zookeeper is optional
+			self.add_module(asab.zookeeper.Module)
+			self.ZooKeeperService = self.get_service("asab.ZooKeeperService")
+			self.ZkContainer = asab.zookeeper.ZooKeeperContainer(self.ZooKeeperService, 'zookeeper')
+			self.ASABApiService.initialize_zookeeper(self.ZkContainer)
 
 		# Initialize LibraryService
 		self.LibraryService = asab.library.LibraryService(self, "LibraryService")
@@ -49,3 +53,6 @@ class LLMMicrolinkApplication(asab.Application):
 		# Initialize LLMConversationRouterService
 		self.LLMRouterService = LLMRouterService(self)
 		self.LLMWebHandler = LLMWebHandler(self)
+
+		# Initialize ToolService
+		self.ToolService = ToolService(self)
