@@ -1,6 +1,7 @@
 import abc
 import uuid
 import logging
+import typing
 
 
 L = logging.getLogger(__name__)
@@ -14,3 +15,8 @@ class ToolProviderABC(abc.ABC):
 	@abc.abstractmethod
 	async def initialize(self):
 		pass
+
+	@abc.abstractmethod
+	async def execute(self, function_call) -> typing.AsyncGenerator[typing.Any, None]:
+		pass
+	
